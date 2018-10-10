@@ -24,6 +24,9 @@ namespace MeetingPortalClient
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
+                      "~/Content/animate.css",
+                      "~/Content/react-datetime.css",
+                      "~/Content/font-awesome.css",
                       "~/Content/site.css"));
         }
     }
