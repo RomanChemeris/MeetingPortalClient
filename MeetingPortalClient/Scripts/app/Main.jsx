@@ -41,11 +41,11 @@
             this.setState({ isDateValid: false });
             b = true;
         }
-        if (!this.state.fromTime) {
+        if (!this.state.timeFrom) {
             this.setState({ isTimeFromValid: false });
             b = true;
         }
-        if (!this.state.toTime) {
+        if (!this.state.timeTo) {
             this.setState({ isTimeToValid: false });
             b = true;
         }
@@ -108,7 +108,7 @@
                                     <label className="col-sm-4 col-form-label">Дата</label>
                                     <div className="col-sm-6">
                                         <Datetime className={(!this.state.isDateValid ? "is-invalid" : "")} locale="ru" timeFormat={false} onChange={this.changeDate} defaultValue={this.state.date} />
-                                        <div class="invalid-feedback">
+                                        <div className="invalid-feedback">
                                             Выберите дату
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@
                                     <label className="col-sm-4 col-form-label">Время начала</label>
                                     <div className="col-sm-6">
                                         <Datetime className={(!this.state.isTimeFromValid ? "is-invalid" : "")} locale="ru" dateFormat={false} onChange={this.changeTimeFrom} defaultValue={this.state.timeFrom} />
-                                        <div class="invalid-feedback">
+                                        <div className="invalid-feedback">
                                             Выберите время начала
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@
                                     <label className="col-sm-4 col-form-label">Время окончания</label>
                                     <div className="col-sm-6">
                                         <Datetime className={(!this.state.isTimeToValid ? "is-invalid" : "")} locale="ru" dateFormat={false}  onChange={this.changeTimeTo} defaultValue={this.state.timeTo} />
-                                        <div class="invalid-feedback">
+                                        <div className="invalid-feedback">
                                             Выберите время окончания
                                         </div>
                                     </div>
@@ -135,7 +135,7 @@
                                     <label className="col-sm-4 col-form-label">Название</label>
                                     <div className="col-sm-6">
                                         <input className={"form-control " + (!this.state.isNameValid ? "is-invalid" : "")} type="text" onChange={this.changeName} />
-                                        <div class="invalid-feedback">
+                                        <div className="invalid-feedback">
                                             Введите название
                                         </div>
                                     </div>
