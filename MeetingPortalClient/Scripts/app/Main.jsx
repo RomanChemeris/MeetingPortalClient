@@ -4,10 +4,15 @@
         var currentDate = new Date();
         currentDate.setMinutes(0);
         this.state = {
-            date: currentDate,
+            date: moment(currentDate).format('YYYY-DD-MM'),
             timeFrom: ("0" + (currentDate.getHours() + 1)).slice(-2) + ":00",
             timeTo: ("0" + (currentDate.getHours() + 2)).slice(-2) + ":00",
-            name: ''
+            name: '',
+
+            isNameValid: true,
+            isDateValid: true,
+            isTimeFromValid: true,
+            isTimeToValid: true,
         };
         this.handleCloseClick = this.handleCloseClick.bind(this);
         this.sendBookingRequest = this.sendBookingRequest.bind(this);
@@ -27,18 +32,63 @@
         handleModalCloseClick();
     }
     sendBookingRequest(e) {
-        console.log(e.target.value);
+        let b = false;
+        if (!this.state.name) {
+            this.setState({ isNameValid: false });
+            b = true;
+        }
+        if (!this.state.date) {
+            this.setState({ isDateValid: false });
+            b = true;
+        }
+        if (!this.state.fromTime) {
+            this.setState({ isTimeFromValid: false });
+            b = true;
+        }
+        if (!this.state.toTime) {
+            this.setState({ isTimeToValid: false });
+            b = true;
+        }
+        if (b) {return;}
+        const toUrlEncoded = obj => Object.keys(obj).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(obj[k])).join('&');
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://meetingportal.pvpve.ru/api/MeetingRooms/AddMeetingRequest', true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(toUrlEncoded({
+            roomId: this.props.dataItem.Id,
+            name: this.state.name,
+            fromTime: moment(this.state.date + " " + this.state.timeFrom, 'YYYY-DD-MM HH:mm').toISOString(),
+            toTime: moment(this.state.date + " " + this.state.timeTo, 'YYYY-DD-MM HH:mm').toISOString()
+        }));
+
+        this.handleCloseClick();
     }
     changeDate(e) {
-        this.setState({ date: e.toISOString() });
+        this.setState({ isDateValid: true });
+        try {
+            this.setState({ date: e.format('YYYY-DD-MM') });
+        } catch (err) {
+            this.setState({ date: '' });
+        }
     }
     changeTimeFrom(e) {
-        this.setState({ timeFrom: e.format("HH:mm") });
+        this.setState({ isTimeFromValid: true });
+        try {
+            this.setState({ timeFrom: e.format("HH:mm") });
+        } catch (err) {
+            this.setState({ timeFrom: '' });
+        }
     }
     changeTimeTo(e) {
-        this.setState({ timeTo: e.format("HH:mm") });
+        this.setState({ isTimeToValid: true });
+        try {
+            this.setState({ timeTo: e.format("HH:mm") });
+        } catch (err) {
+            this.setState({ timeTo: '' });
+        }
     }
     changeName(e) {
+        this.setState({ isNameValid: true });
         this.setState({ name: e.target.value });
     }
     render() {
@@ -48,8 +98,7 @@
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">Бронирование комнаты {this.props
-                                    .dataItem.Name}</h5>
+                                <h5 className="modal-title" id="exampleModalLabel">Бронирование комнаты {this.props.dataItem.Name}</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -58,25 +107,37 @@
                                 <div className="form-group row">
                                     <label className="col-sm-4 col-form-label">Дата</label>
                                     <div className="col-sm-6">
-                                        <Datetime locale="ru" timeFormat={false} onChange={this.changeDate} defaultValue={this.state.date} />
+                                        <Datetime className={(!this.state.isDateValid ? "is-invalid" : "")} locale="ru" timeFormat={false} onChange={this.changeDate} defaultValue={this.state.date} />
+                                        <div class="invalid-feedback">
+                                            Выберите дату
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="form-group row">
                                     <label className="col-sm-4 col-form-label">Время начала</label>
                                     <div className="col-sm-6">
-                                        <Datetime locale="ru" dateFormat={false} onChange={this.changeTimeFrom} defaultValue={this.state.timeFrom} />
+                                        <Datetime className={(!this.state.isTimeFromValid ? "is-invalid" : "")} locale="ru" dateFormat={false} onChange={this.changeTimeFrom} defaultValue={this.state.timeFrom} />
+                                        <div class="invalid-feedback">
+                                            Выберите время начала
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="form-group row">
                                     <label className="col-sm-4 col-form-label">Время окончания</label>
                                     <div className="col-sm-6">
-                                        <Datetime locale="ru" dateFormat={false} onChange={this.changeTimeTo} defaultValue={this.state.timeTo} />
+                                        <Datetime className={(!this.state.isTimeToValid ? "is-invalid" : "")} locale="ru" dateFormat={false}  onChange={this.changeTimeTo} defaultValue={this.state.timeTo} />
+                                        <div class="invalid-feedback">
+                                            Выберите время окончания
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="form-group row">
                                     <label className="col-sm-4 col-form-label">Название</label>
                                     <div className="col-sm-6">
-                                        <input className="form-control" type="text" onChange={this.changeName} />
+                                        <input className={"form-control " + (!this.state.isNameValid ? "is-invalid" : "")} type="text" onChange={this.changeName} />
+                                        <div class="invalid-feedback">
+                                            Введите название
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -121,18 +182,18 @@ class MeetingRoomInfo extends React.Component {
     render() {
         const infoNodes = this.state.roomInfo.map((node, i) => (
             <div key={i}>
-                {node.BookingTime} {node.Name}
+                {node.BookingTime} <b>{node.Name}</b >
             </div>
         ));
         return (
             <div className="animated fadeIn">
                 <div>
-                    Проектор: {this.getIcon(this.props.data.HaveProjector)}
+                    <b>Проектор:</b> {this.getIcon(this.props.data.HaveProjector)}
                 </div>
                 <div>
-                    Маркерная доска: {this.getIcon(this.props.data.HaveMarkerBoard)}
+                    <b>Маркерная доска:</b> {this.getIcon(this.props.data.HaveMarkerBoard)}
                 </div>
-                {infoNodes.length > 0 ? "Зарезервированное время:" : ""}
+                <b>{infoNodes.length > 0 ? "Зарезервированное время:" : ""}</b>
                 {infoNodes}
                 <div>
                     <button className="btn btn-primary" onClick={() => this.handleModalShowClick(this.props.data)}>

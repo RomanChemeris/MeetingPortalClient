@@ -8,3 +8,9 @@
 .meetingRoom-item {
     transition: all .5s ease;
 }
+.rdt.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+.rdt.is-invalid .form-control {
+    border-color: #dc3545;
+}
