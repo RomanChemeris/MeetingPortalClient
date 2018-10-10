@@ -14,3 +14,12 @@
 .rdt.is-invalid .form-control {
     border-color: #dc3545;
 }
+.meetingRoom-item a.list-group-item-action {
+    display: block;
+}
+.meetingRoom-item a.list-group-item-action:hover, .meetingRoom-item a.list-group-item-action:focus {
+    background: none;
+}
+#meetingRooms {
+    padding-bottom: 15px;
+}

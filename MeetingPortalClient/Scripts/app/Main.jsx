@@ -218,7 +218,8 @@ class MeetingTableItem extends React.Component {
     handleModalShowClick(e) {
         this.props.onShowBooking(e);
     }
-    handleToggleClick() {
+    handleToggleClick(e) {
+        e.preventDefault();
         this.setState(state => ({
             showDescription: !state.showDescription
         }));
@@ -243,8 +244,8 @@ class MeetingTableItem extends React.Component {
     }
     render() {
         return (
-            <div className="list-group-item">
-                <a key={this.state.room.Id} onClick={this.handleToggleClick} href="#" className="list-group-item-action flex-column align-items-start meetingRoom-item">
+            <div className="list-group-item meetingRoom-item">
+                <a key={this.state.room.Id} onClick={this.handleToggleClick} href="#" className="list-group-item-action flex-column align-items-start">
                     <div className="d-flex w-100 justify-content-between">
                         <h5 className="mb-1">Комната {this.state.room.Name}</h5>
                         <small>
